@@ -1,0 +1,35 @@
+module PDFServiceModule {
+
+    // Type alias pour les octets binaires (contenu des fichiers PDF)
+    typedef sequence<octet> ByteArray;
+
+    // Séquence de ByteArray (pour fusionner plusieurs PDFs)
+    typedef sequence<ByteArray> ByteArrayList;
+
+    interface PDFService {
+
+        // 1. Fusion de plusieurs PDFs en un seul
+        ByteArray mergePDFs(in ByteArrayList pdfFiles);
+
+        // 2. Découpage : retourne une liste de PDFs (1 par page)
+        ByteArrayList splitPDF(in ByteArray pdfFile);
+
+        // 3. Extraction de pages spécifiques (ex: "1,3,5")
+        ByteArray extractPages(in ByteArray pdfFile, in string pageNumbers);
+
+        // 4. Suppression d'une page (numéro commence à 0)
+        ByteArray deletePage(in ByteArray pdfFile, in long pageIndex);
+
+        // 5. Ajout d'un mot de passe
+        ByteArray addPassword(in ByteArray pdfFile, in string password);
+
+        // 6. Conversion PDF -> Images (retourne liste d'images PNG)
+        ByteArrayList convertToImages(in ByteArray pdfFile);
+
+        // 7. Extraction du texte brut
+        string extractText(in ByteArray pdfFile);
+
+        // 8. Création d'un PDF à partir d'un texte
+        ByteArray createPDF(in string content);
+    };
+};
