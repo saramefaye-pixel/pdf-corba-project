@@ -3,63 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Manager — CORBA</title>
+    <title>PDF Manager Pro</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        :root {
+            --rouge: #c0392b;
+            --rouge-fonce: #96281b;
+            --rouge-clair: #e74c3c;
+            --blanc: #ffffff;
+            --gris-clair: #f5f5f5;
+            --gris: #e0e0e0;
+            --texte: #2c2c2c;
+            --ombre: 0 4px 15px rgba(192,57,43,0.15);
+        }
+
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #0f0f1a;
-            color: #e0e0ff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--gris-clair);
+            color: var(--texte);
             min-height: 100vh;
         }
 
+        /* HEADER */
         header {
-            background: linear-gradient(135deg, #1a1a3e, #2d2d6b);
-            padding: 24px 40px;
-            border-bottom: 2px solid #4a4aff;
+            background: linear-gradient(135deg, var(--rouge-fonce), var(--rouge));
+            color: var(--blanc);
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 40px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--blanc);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+        }
+
+        .logo h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logo p {
+            font-size: 0.75rem;
+            opacity: 0.85;
+        }
+
+        .header-badge {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        /* NAVBAR */
+        nav {
+            background: var(--rouge-fonce);
+            display: flex;
+            overflow-x: auto;
+            padding: 0 40px;
+        }
+
+        nav a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            padding: 12px 18px;
+            font-size: 0.88rem;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--blanc);
+            border-bottom-color: var(--blanc);
+            background: rgba(255,255,255,0.08);
+        }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, var(--rouge), var(--rouge-clair));
+            color: var(--blanc);
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .hero h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            opacity: 0.9;
+            font-size: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .stat {
             text-align: center;
         }
 
-        header h1 {
-            font-size: 2rem;
-            color: #7b7bff;
-            letter-spacing: 2px;
+        .stat strong {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 700;
         }
 
-        header p {
-            color: #9090cc;
-            margin-top: 6px;
-            font-size: 0.9rem;
+        .stat span {
+            font-size: 0.8rem;
+            opacity: 0.85;
         }
 
+        /* CONTAINER */
         .container {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 40px auto;
             padding: 0 20px;
         }
 
-        .card {
-            background: #1a1a2e;
-            border: 1px solid #2a2a5a;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-            transition: border-color 0.3s;
+        .section-title {
+            text-align: center;
+            margin-bottom: 30px;
         }
 
-        .card:hover { border-color: #4a4aff; }
+        .section-title h3 {
+            font-size: 1.4rem;
+            color: var(--rouge);
+            margin-bottom: 6px;
+        }
 
-        .card h2 {
-            font-size: 1.1rem;
-            color: #7b7bff;
-            margin-bottom: 16px;
+        .section-title p {
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        /* GRID */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        /* CARD */
+        .card {
+            background: var(--blanc);
+            border-radius: 14px;
+            box-shadow: var(--ombre);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(192,57,43,0.2);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--rouge), var(--rouge-clair));
+            color: var(--blanc);
+            padding: 18px 20px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
-        .card h2 span { font-size: 1.4rem; }
+        .card-header .icon {
+            font-size: 1.6rem;
+            width: 44px;
+            height: 44px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .card-header p {
+            font-size: 0.75rem;
+            opacity: 0.85;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
         input[type="file"],
         input[type="text"],
@@ -67,321 +242,48 @@
         textarea {
             width: 100%;
             padding: 10px 14px;
-            background: #0f0f1a;
-            border: 1px solid #3a3a6a;
+            border: 2px solid var(--gris);
             border-radius: 8px;
-            color: #e0e0ff;
-            margin-bottom: 12px;
             font-size: 0.9rem;
+            color: var(--texte);
+            background: var(--gris-clair);
+            margin-bottom: 14px;
+            transition: border-color 0.2s;
         }
 
-        input[type="file"] { cursor: pointer; }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--rouge);
+            background: var(--blanc);
+        }
+
+        input[type="file"] {
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        textarea { resize: vertical; min-height: 100px; }
 
         button {
-            background: linear-gradient(135deg, #4a4aff, #7b2dff);
-            color: white;
+            width: 100%;
+            background: linear-gradient(135deg, var(--rouge), var(--rouge-clair));
+            color: var(--blanc);
             border: none;
-            padding: 10px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: opacity 0.2s;
-        }
-
-        button:hover { opacity: 0.85; }
-        button:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        .result {
-            margin-top: 14px;
             padding: 12px;
             border-radius: 8px;
-            font-size: 0.88rem;
-            display: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            letter-spacing: 0.5px;
         }
 
-        .result.success {
-            background: #0d2d1a;
-            border: 1px solid #2dff7b;
-            color: #2dff7b;
-            display: block;
-        }
+        button:hover { opacity: 0.9; transform: scale(1.01); }
+        button:active { transform: scale(0.99); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .result.error {
-            background: #2d0d0d;
-            border: 1px solid #ff4a4a;
-            color: #ff4a4a;
-            display: block;
-        }
-
-        .result.info {
-            background: #0d1a2d;
-            border: 1px solid #4a9fff;
-            color: #4a9fff;
-            display: block;
-        }
-
-        label {
-            display: block;
-            font-size: 0.85rem;
-            color: #9090cc;
-            margin-bottom: 6px;
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <h1>⚡ PDF Manager</h1>
-    <p>Propulsé par CORBA 1.8 + Apache PDFBox + Spring Boot</p>
-</header>
-
-<div class="container">
-
-    <!-- 1. Fusion -->
-    <div class="card">
-        <h2><span>🔀</span> Fusion de PDFs</h2>
-        <label>Sélectionner plusieurs fichiers PDF :</label>
-        <input type="file" id="mergeFiles" accept=".pdf" multiple>
-        <button onclick="mergePDFs()">Fusionner</button>
-        <div id="mergeResult" class="result"></div>
-    </div>
-
-    <!-- 2. Découpage -->
-    <div class="card">
-        <h2><span>✂️</span> Découpage de PDF</h2>
-        <label>Fichier PDF à découper :</label>
-        <input type="file" id="splitFile" accept=".pdf">
-        <button onclick="splitPDF()">Découper</button>
-        <div id="splitResult" class="result"></div>
-    </div>
-
-    <!-- 3. Extraction de pages -->
-    <div class="card">
-        <h2><span>📄</span> Extraction de pages</h2>
-        <label>Fichier PDF :</label>
-        <input type="file" id="extractFile" accept=".pdf">
-        <label>Numéros de pages (ex: 1,3,5) :</label>
-        <input type="text" id="extractPages" placeholder="1,3,5">
-        <button onclick="extractPages()">Extraire</button>
-        <div id="extractResult" class="result"></div>
-    </div>
-
-    <!-- 4. Suppression de page -->
-    <div class="card">
-        <h2><span>🗑️</span> Suppression de page</h2>
-        <label>Fichier PDF :</label>
-        <input type="file" id="deleteFile" accept=".pdf">
-        <label>Numéro de page à supprimer (commence à 0) :</label>
-        <input type="number" id="deleteIndex" placeholder="0" min="0">
-        <button onclick="deletePage()">Supprimer</button>
-        <div id="deleteResult" class="result"></div>
-    </div>
-
-    <!-- 5. Mot de passe -->
-    <div class="card">
-        <h2><span>🔒</span> Ajout de mot de passe</h2>
-        <label>Fichier PDF :</label>
-        <input type="file" id="passFile" accept=".pdf">
-        <label>Mot de passe :</label>
-        <input type="text" id="password" placeholder="MonMotDePasse123">
-        <button onclick="addPassword()">Protéger</button>
-        <div id="passResult" class="result"></div>
-    </div>
-
-    <!-- 6. Conversion images -->
-    <div class="card">
-        <h2><span>🖼️</span> Conversion PDF → Images</h2>
-        <label>Fichier PDF :</label>
-        <input type="file" id="imgFile" accept=".pdf">
-        <button onclick="toImages()">Convertir</button>
-        <div id="imgResult" class="result"></div>
-    </div>
-
-    <!-- 7. Extraction texte -->
-    <div class="card">
-        <h2><span>📝</span> Extraction de texte</h2>
-        <label>Fichier PDF :</label>
-        <input type="file" id="textFile" accept=".pdf">
-        <button onclick="extractText()">Extraire le texte</button>
-        <div id="textResult" class="result"></div>
-    </div>
-
-    <!-- 8. Création PDF -->
-    <div class="card">
-        <h2><span>✨</span> Création de PDF</h2>
-        <label>Contenu à convertir en PDF :</label>
-        <textarea id="createContent" rows="5"
-            placeholder="Saisir votre texte ici..."></textarea>
-        <button onclick="createPDF()">Créer le PDF</button>
-        <div id="createResult" class="result"></div>
-    </div>
-
-</div>
-
-<script>
-    const API = "https://spring-pdf-client.onrender.com/api/pdf";
-
-    // Utilitaire : télécharger un blob PDF
-    function downloadPDF(blob, filename) {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
-
-    function showResult(id, message, type) {
-        const el = document.getElementById(id);
-        el.textContent = message;
-        el.className = "result " + type;
-    }
-
-    // 1. Fusion
-    async function mergePDFs() {
-        const files = document.getElementById("mergeFiles").files;
-        if (files.length < 2) {
-            return showResult("mergeResult", "⚠️ Sélectionnez au moins 2 fichiers.", "error");
-        }
-        const form = new FormData();
-        for (let f of files) form.append("files", f);
-        try {
-            showResult("mergeResult", "⏳ Fusion en cours...", "info");
-            const res = await fetch(`${API}/merge`, { method: "POST", body: form });
-            const blob = await res.blob();
-            downloadPDF(blob, "fusion.pdf");
-            showResult("mergeResult", "✅ Fusion réussie ! Téléchargement en cours.", "success");
-        } catch (e) {
-            showResult("mergeResult", "❌ Erreur : " + e.message, "error");
-        }
-    }
-
-    // 2. Découpage
-    async function splitPDF() {
-        const file = document.getElementById("splitFile").files[0];
-        if (!file) return showResult("splitResult", "⚠️ Sélectionnez un fichier.", "error");
-        const form = new FormData();
-        form.append("file", file);
-        try {
-            showResult("splitResult", "⏳ Découpage en cours...", "info");
-            const res = await fetch(`${API}/split`, { method: "POST", body: form });
-            const data = await res.json();
-            showResult("splitResult", `✅ PDF découpé en ${data.length} pages.`, "success");
-        } catch (e) {
-            showResult("splitResult", "❌ Erreur : " + e.message, "error");
-        }
-    }
-
-    // 3. Extraction de pages
-    async function extractPages() {
-        const file = document.getElementById("extractFile").files[0];
-        const pages = document.getElementById("extractPages").value;
-        if (!file || !pages) {
-            return showResult("extractResult", "⚠️ Fichier et pages requis.", "error");
-        }
-        const form = new FormData();
-        form.append("file", file);
-        form.append("pages", pages);
-        try {
-            showResult("extractResult", "⏳ Extraction en cours...", "info");
-            const res = await fetch(`${API}/extract-pages`, { method: "POST", body: form });
-            const blob = await res.blob();
-            downloadPDF(blob, "extrait.pdf");
-            showResult("extractResult", "✅ Pages extraites avec succès !", "success");
-        } catch (e) {
-            showResult("extractResult", "❌ Erreur : " + e.message, "error");
-        }
-    }
-
-    // 4. Suppression de page
-    async function deletePage() {
-        const file = document.getElementById("deleteFile").files[0];
-        const index = document.getElementById("deleteIndex").value;
-        if (!file) return showResult("deleteResult", "⚠️ Sélectionnez un fichier.", "error");
-        const form = new FormData();
-        form.append("file", file);
-        form.append("pageIndex", index);
-        try {
-            showResult("deleteResult", "⏳ Suppression en cours...", "info");
-            const res = await fetch(`${API}/delete-page`, { method: "POST", body: form });
-            const blob = await res.blob();
-            downloadPDF(blob, "modifie.pdf");
-            showResult("deleteResult", "✅ Page supprimée avec succès !", "success");
-        } catch (e) {
-            showResult("deleteResult", "❌ Erreur : " + e.message, "error");
-        }
-    }
-
-    // 5. Mot de passe
-    async function addPassword() {
-        const file = document.getElementById("passFile").files[0];
-        const pass = document.getElementById("password").value;
-        if (!file || !pass) {
-            return showResult("passResult", "⚠️ Fichier et mot de passe requis.", "error");
-        }
-        const form = new FormData();
-        form.append("file", file);
-        form.append("password", pass);
-        try {
-            showResult("passResult", "⏳ Protection en cours...", "info");
-            const res = await fetch(`${API}/add-password`, { method: "POST", body: form });
-            const blob = await res.blob();
-            downloadPDF(blob, "protege.pdf");
-            showResult("passResult", "✅ PDF protégé avec succès !", "success");
-        } catch (e) {
-            showResult("passResult", "❌ Erreur : " + e.message, "error");
-        }
-    }
-
-    // 6. Conversion images
-    async function toImages() {
-        const file = document.getElementById("imgFile").files[0];
-        if (!file) return showResult("imgResult", "⚠️ Sélectionnez un fichier.", "error");
-        const form = new FormData();
-        form.append("file", file);
-        try {
-            showResult("imgResult", "⏳ Conversion en cours...", "info");
-            const res = await fetch(`${API}/to-images`, { method: "POST", body: form });
-            const data = await res.json();
-            showResult("imgResult", `✅ ${data.length} image(s) générée(s).`, "success");
-        } catch (e) {
-            showResult("imgResult", "❌ Erreur : " + e.message, "error");
-        }
-    }
-
-    // 7. Extraction texte
-    async function extractText() {
-        const file = document.getElementById("textFile").files[0];
-        if (!file) return showResult("textResult", "⚠️ Sélectionnez un fichier.", "error");
-        const form = new FormData();
-        form.append("file", file);
-        try {
-            showResult("textResult", "⏳ Extraction en cours...", "info");
-            const res = await fetch(`${API}/extract-text`, { method: "POST", body: form });
-            const text = await res.text();
-            showResult("textResult", "✅ Texte extrait :\n" + text.substring(0, 300) + "...", "success");
-        } catch (e) {
-            showResult("textResult", "❌ Erreur : " + e.message, "error");
-        }
-    }
-
-    // 8. Création PDF
-    async function createPDF() {
-        const content = document.getElementById("createContent").value;
-        if (!content) return showResult("createResult", "⚠️ Saisissez du contenu.", "error");
-        const form = new FormData();
-        form.append("content", content);
-        try {
-            showResult("createResult", "⏳ Création en cours...", "info");
-            const res = await fetch(`${API}/create`, { method: "POST", body: form });
-            const blob = await res.blob();
-            downloadPDF(blob, "nouveau.pdf");
-            showResult("createResult", "✅ PDF créé avec succès !", "success");
-        } catch (e) {
-            showResult("createResult", "❌ Erreur : " + e.message, "error");
-        }
-    }
-</script>
-
-</body>
-</html>
+        /* RESULT */
+        .result {
+            margin-top: 14px;
+            padding: 12px 14px;
+            border-radius: 8px;
