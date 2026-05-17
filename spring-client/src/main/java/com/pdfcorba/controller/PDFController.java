@@ -9,27 +9,37 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/pdf")
-@CrossOrigin(origins = "*") // Autorise le frontend à appeler l'API
+@CrossOrigin(origins = "*")
 public class PDFController {
 
     @Autowired
     private CORBAClientService corbaService;
 
-    // Réponse PDF utilitaire
     private ResponseEntity<byte[]> pdfResponse(byte[] data, String filename) {
-        return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION,
-                    "attachment; filename=" + filename)
-            .contentType(MediaType.APPLICATION_PDF)
-            .body(data);
+        if (data == null || data.length == 0) {
+            return ResponseEntity.internalServerError().build();
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentLength(data.length);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + filename + "\"");
+        headers.set("Access-Control-Expose-Headers",
+                "Content-Disposition");
+        return ResponseEntity.ok().headers(headers).body(data);
     }
 
-    // 1. Fusion
+    private ResponseEntity<byte[]> imageResponse(byte[] data, String filename) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        headers.setContentLength(data.length);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + filename + "\"");
+        return ResponseEntity.ok().headers(headers).body(data);
+    }
+
     @PostMapping("/merge")
     public ResponseEntity<byte[]> merge(
             @RequestParam("files") MultipartFile[] files) throws Exception {
@@ -39,72 +49,72 @@ public class PDFController {
         }
         PDFService service = corbaService.getPdfService();
         byte[] result = service.mergePDFs(pdfs);
-        return pdfResponse(result, "merged.pdf");
+        return pdfResponse(result, "fusion.pdf");
     }
 
-    // 2. Découpage
     @PostMapping("/split")
     public ResponseEntity<byte[][]> split(
             @RequestParam("file") MultipartFile file) throws Exception {
         PDFService service = corbaService.getPdfService();
         byte[][] result = service.splitPDF(file.getBytes());
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok()
+                .header("Access-Control-Expose-Headers", "Content-Type")
+                .body(result);
     }
 
-    // 3. Extraction de pages
     @PostMapping("/extract-pages")
     public ResponseEntity<byte[]> extractPages(
             @RequestParam("file") MultipartFile file,
             @RequestParam("pages") String pages) throws Exception {
         PDFService service = corbaService.getPdfService();
         byte[] result = service.extractPages(file.getBytes(), pages);
-        return pdfResponse(result, "extracted.pdf");
+        return pdfResponse(result, "extrait.pdf");
     }
 
-    // 4. Suppression de page
     @PostMapping("/delete-page")
     public ResponseEntity<byte[]> deletePage(
             @RequestParam("file") MultipartFile file,
             @RequestParam("pageIndex") int pageIndex) throws Exception {
         PDFService service = corbaService.getPdfService();
         byte[] result = service.deletePage(file.getBytes(), pageIndex);
-        return pdfResponse(result, "modified.pdf");
+        return pdfResponse(result, "modifie.pdf");
     }
 
-    // 5. Ajout mot de passe
     @PostMapping("/add-password")
     public ResponseEntity<byte[]> addPassword(
             @RequestParam("file") MultipartFile file,
             @RequestParam("password") String password) throws Exception {
         PDFService service = corbaService.getPdfService();
         byte[] result = service.addPassword(file.getBytes(), password);
-        return pdfResponse(result, "protected.pdf");
+        return pdfResponse(result, "protege.pdf");
     }
 
-    // 6. Conversion PDF -> Images
     @PostMapping("/to-images")
-    public ResponseEntity<byte[][]> toImages(
+    public ResponseEntity<byte[]> toImages(
             @RequestParam("file") MultipartFile file) throws Exception {
         PDFService service = corbaService.getPdfService();
         byte[][] result = service.convertToImages(file.getBytes());
-        return ResponseEntity.ok(result);
+        if (result.length > 0) {
+            return imageResponse(result[0], "page_1.png");
+        }
+        return ResponseEntity.internalServerError().build();
     }
 
-    // 7. Extraction de texte
     @PostMapping("/extract-text")
     public ResponseEntity<String> extractText(
             @RequestParam("file") MultipartFile file) throws Exception {
         PDFService service = corbaService.getPdfService();
         String result = service.extractText(file.getBytes());
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(result);
     }
 
-    // 8. Création PDF
     @PostMapping("/create")
     public ResponseEntity<byte[]> createPDF(
             @RequestParam("content") String content) throws Exception {
         PDFService service = corbaService.getPdfService();
         byte[] result = service.createPDF(content);
-        return pdfResponse(result, "created.pdf");
+        return pdfResponse(result, "nouveau.pdf");
     }
 }
