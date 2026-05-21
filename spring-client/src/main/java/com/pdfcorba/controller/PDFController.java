@@ -22,6 +22,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @RestController
 @RequestMapping("/api/pdf")
@@ -33,6 +35,16 @@ public class PDFController {
             return ResponseEntity.internalServerError().build();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentLength(data.length);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + filename + "\"");
+        headers.set("Access-Control-Expose-Headers", "Content-Disposition");
+        return ResponseEntity.ok().headers(headers).body(data);
+    }
+
+    private ResponseEntity<byte[]> zipResponse(byte[] data, String filename) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/zip"));
         headers.setContentLength(data.length);
         headers.set(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + filename + "\"");
@@ -53,15 +65,27 @@ public class PDFController {
     }
 
     @PostMapping("/split")
-    public ResponseEntity<String> split(
+    public ResponseEntity<byte[]> split(
             @RequestParam("file") MultipartFile file) throws Exception {
         PDDocument doc = PDDocument.load(file.getBytes());
         Splitter splitter = new Splitter();
         List<PDDocument> pages = splitter.split(doc);
-        int count = pages.size();
-        for (PDDocument p : pages) p.close();
+
+        ByteArrayOutputStream zipOut = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(zipOut);
+
+        for (int i = 0; i < pages.size(); i++) {
+            ByteArrayOutputStream pageOut = new ByteArrayOutputStream();
+            pages.get(i).save(pageOut);
+            pages.get(i).close();
+            ZipEntry entry = new ZipEntry("page_" + (i + 1) + ".pdf");
+            zos.putNextEntry(entry);
+            zos.write(pageOut.toByteArray());
+            zos.closeEntry();
+        }
+        zos.close();
         doc.close();
-        return ResponseEntity.ok("{\"pages\":" + count + "}");
+        return zipResponse(zipOut.toByteArray(), "pages_decoupees.zip");
     }
 
     @PostMapping("/extract-pages")
@@ -114,16 +138,22 @@ public class PDFController {
             @RequestParam("file") MultipartFile file) throws Exception {
         PDDocument doc = PDDocument.load(file.getBytes());
         PDFRenderer renderer = new PDFRenderer(doc);
-        BufferedImage image = renderer.renderImageWithDPI(0, 150);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ImageIO.write(image, "PNG", out);
+
+        ByteArrayOutputStream zipOut = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(zipOut);
+
+        for (int i = 0; i < doc.getNumberOfPages(); i++) {
+            BufferedImage image = renderer.renderImageWithDPI(i, 150);
+            ByteArrayOutputStream imgOut = new ByteArrayOutputStream();
+            ImageIO.write(image, "PNG", imgOut);
+            ZipEntry entry = new ZipEntry("page_" + (i + 1) + ".png");
+            zos.putNextEntry(entry);
+            zos.write(imgOut.toByteArray());
+            zos.closeEntry();
+        }
+        zos.close();
         doc.close();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_PNG);
-        headers.setContentLength(out.size());
-        headers.set(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"page_1.png\"");
-        return ResponseEntity.ok().headers(headers).body(out.toByteArray());
+        return zipResponse(zipOut.toByteArray(), "images_pdf.zip");
     }
 
     @PostMapping("/extract-text")
