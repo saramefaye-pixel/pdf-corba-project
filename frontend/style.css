@@ -379,4 +379,123 @@ main {
     font-weight: 600;
     cursor: pointer;
     transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
-    lette
+    letter-spacing: 0.2px;
+    margin-top: 4px;
+}
+
+.btn svg { width: 16px; height: 16px; fill: var(--blanc); flex-shrink: 0; }
+
+.btn:hover {
+    background: var(--bordeaux-hover);
+    box-shadow: 0 4px 14px rgba(107,26,26,0.3);
+}
+
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ========== RÉSULTATS ========== */
+.result {
+    margin-top: 14px;
+    padding: 11px 14px;
+    border-radius: var(--rayon);
+    font-size: 0.86rem;
+    line-height: 1.5;
+    display: none;
+    border-left: 4px solid transparent;
+}
+
+.result.success {
+    background: var(--succes-bg);
+    border-color: var(--succes);
+    color: var(--succes);
+    display: block;
+    font-weight: 500;
+}
+
+.result.error {
+    background: var(--erreur-bg);
+    border-color: var(--erreur);
+    color: var(--erreur);
+    display: block;
+    font-weight: 500;
+}
+
+.result.info {
+    background: var(--info-bg);
+    border-color: var(--info);
+    color: var(--info);
+    display: block;
+}
+
+.result.text-result {
+    background: var(--gris-clair);
+    border-color: var(--gris-bordure);
+    color: var(--texte-principal);
+    display: block;
+    white-space: pre-wrap;
+    max-height: 220px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+}
+
+/* ========== FOOTER ========== */
+footer {
+    background: var(--bordeaux);
+    color: rgba(255,255,255,0.75);
+    padding: 36px 32px;
+    margin-top: 64px;
+}
+
+.footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.footer-logo svg { width: 28px; height: 28px; fill: rgba(255,255,255,0.6); }
+
+.footer-logo strong {
+    color: var(--blanc);
+    font-size: 1rem;
+    font-weight: 600;
+    display: block;
+    line-height: 1.2;
+}
+
+.footer-logo span {
+    font-size: 0.75rem;
+    opacity: 0.65;
+}
+
+.footer-copy {
+    font-size: 0.78rem;
+    opacity: 0.6;
+    text-align: right;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .header-inner { padding: 14px 16px; }
+    .nav-inner { padding: 0 8px; }
+    nav a { padding: 12px 14px; font-size: 0.8rem; }
+    .hero { padding: 40px 16px; }
+    .hero h2 { font-size: 1.6rem; }
+    .hero-stats { gap: 28px; }
+    main { padding: 0 16px; margin: 32px auto; }
+    .grid { grid-template-columns: 1fr; gap: 20px; }
+    .footer-inner { flex-direction: column; text-align: center; }
+    .footer-copy { text-align: center; }
+    .header-actions { display: none; }
+}
